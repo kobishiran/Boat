@@ -36,11 +36,11 @@ char auth[] = BLYNK_AUTH_TOKEN;
 //char ssid[] = "Redmi";
 //char pass[] = "83hf7eg3"; 
 
-//char ssid[] = "POCO X3 Pro";
-//char pass[] = "123456789";
-
-char ssid[] = "Avshalom";
+char ssid[] = "POCO X3 Pro";
 char pass[] = "123456789";
+
+//char ssid[] = "Avshalom";
+//char pass[] = "123456789";
 
 // laptop server for area intel 
 const uint16_t port = 8090;
@@ -140,7 +140,7 @@ BLYNK_WRITE(V1)
     //laser on/off
     case 2:
     
-      ledcWrite(laserCh,map(sliderRight,-255,255,255,0));
+      ledcWrite(laserCh,map(sliderRight,-255,255,0,255));
       break;
     Serial.print(sliderLeft);
     Serial.print(",");
@@ -181,6 +181,7 @@ bool establishLaptopConnection()
 BLYNK_WRITE(V3)
 {
   if (!isLaptopConnected){
+    isLaptopConnected = establishLaptopConnection();
     return;
   }
   for (int pos = 0; pos <= 180; pos += 1){
@@ -212,7 +213,6 @@ void setup()
   pinMode(speedPinB, OUTPUT);
 
   pinMode(laserPin, OUTPUT);
-  digitalWrite(laserPin,HIGH);
   pinMode(ultraSonicTrigPin, OUTPUT);
   pinMode(ultraSonicEchoPins[0], INPUT);
   pinMode(ultraSonicEchoPins[1], INPUT);
@@ -233,6 +233,7 @@ void setup()
   ledcAttachPin(speedPinA, speedACh);
   ledcAttachPin(speedPinB, speedBCh);
 
+  ledcWrite(laserCh,255);
   
 
   // Debug console
@@ -243,15 +244,14 @@ void setup()
   // You can also specify server:
   //Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
   //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
-  isLaptopConnected = establishLaptopConnection(); 
+  
+  isLaptopConnected = False
 }
 
 void loop()
 {
-  Blynk.run();
-  if (!isLaptopConnected){
-    isLaptopConnected = establishLaptopConnection();
-  }
+  Blynk.run(); 
+
 }
  
 void motorsControl(int speedACh, int speedBCh, int motorApin1,int motorApin2,int motorBpin1, int motorBpin2,int sliderLeft,int sliderRight)
